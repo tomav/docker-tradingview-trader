@@ -34,8 +34,8 @@ app.get('/exchanges', function (req, res) {
 	}) ();
 })
 
-app.get('/markets', function (req, res) {
-	let exchange = req.query.exchange
+app.get('/exchanges/:exchange?', function (req, res) {
+	let exchange = req.params.exchange
 	if (!exchange) {
 		res.send("Please provide an 'exchange' value.")
 	} else {

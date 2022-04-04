@@ -12,6 +12,9 @@ This nodejs project allows you to execute trades from Tradingview alerts on most
 
 ### Tradingview alert message
 
+Tradingview `Webhook URL` must be set to `https://{your-hostname.tld}/trade`
+Read the following section to understand to fill the `Message` field.
+
 #### Real-life example
 
 ```
@@ -41,3 +44,8 @@ This example will open a market position, place a limit buy order, and set a sto
 * `a` (amount) => amount to buy or sell
 * `p` (price)  => price to execute the order (only used for limit and stop orders)
 
+### Endpoints
+
+* `POST /trade` to place trades from tradingview
+* `GET /exchanges` to list supported exhanges, useful to find a `ccxt id` 
+* `GET /exchanges/:exchange` to list available instruments (symbols) for a specific exchange
