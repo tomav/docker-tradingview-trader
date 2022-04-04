@@ -1,6 +1,6 @@
 # docker-tradingview-trader
 
-This nodejs project allow you to execute trades from Tradingview alerts on most crypto exchanges.
+This nodejs project allows you to execute trades from Tradingview alerts on most crypto exchanges.
 
 ### Usage
 
