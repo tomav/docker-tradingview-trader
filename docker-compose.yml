@@ -1,0 +1,7 @@
+services:
+  trader:
+    image: tvial/docker-tradingview-trader
+    container_name: tv-trader
+    restart: always
+    volumes:
+      - ./config.json:/app/config.json

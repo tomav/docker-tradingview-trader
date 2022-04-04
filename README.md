@@ -8,7 +8,7 @@ This nodejs project allows you to execute trades from Tradingview alerts on most
 	* `name` is the alias for the exchange (you can have multiple aliases/accounts on 1 exchange)
 	* `exchange` is the exchange `id` used in [`ccxt` library](https://github.com/ccxt/ccxt/wiki/Exchange-Markets)
 	* `key` & `secret` refer to the API keys you have to generate on each exchange
-* mount this config file in your docker container
+* mount this config file in your docker container, ideally using `docker-compose.yml`
 
 ### Tradingview alert message
 
