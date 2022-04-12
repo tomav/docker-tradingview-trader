@@ -2,5 +2,5 @@ FROM node:17-alpine
 RUN mkdir /app
 COPY . /app
 WORKDIR /app
-RUN npm i
+RUN npm install
 CMD ["node","index.js"]
