@@ -1,12 +1,12 @@
 {
   "exchanges": [
     {
-      "name": "first_account",
+      "account": "first_account",
       "exchange": "bitfinex",
       "key": "qwerty",
       "secret": "ytrewq"
     }, {
-      "name": "second_account",
+      "account": "second_account",
       "exchange": "deribit",
       "key": "qwerty",
       "secret": "ytrewq",
@@ -14,3 +14,4 @@
     }
   ]
 }
+

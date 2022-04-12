@@ -4,7 +4,10 @@ require('console-stamp')(console, {
 } );
 console.log("-- Starting server...");
 
-let config = require('./config.json');
+const Order 	= require('./class_order.js')
+const Config 	= require('./class_config.js')
+const json 		= require('./config.json');
+const config	= new Config(json)
 
 const ccxt = require ('ccxt');
 const express = require('express')
@@ -14,15 +17,26 @@ const PORT = process.env.PORT || 3000
 
 app.use(express.json()) 
 
-// Generates all necessary exchange clients
+/**************************************************
+ *
+ * Exchanges instances
+ *
+ ***************************************************/
+
 console.log("-- Initializing exchanges:")
 config.exchanges.forEach(function(e){
-	console.log("   -", e.exchange, "("+e.name+")")
-	global[e.name] = new ccxt[e.exchange] ({
+	console.log("   -", e.exchange, "("+e.account+")")
+	global[e.account] = new ccxt[e.exchange] ({
 		apiKey: e.key,
 		secret: e.secret
 	})
 });
+
+/**************************************************
+ *
+ * Routes
+ *
+ ***************************************************/
 
 app.get('/', function (req, res) {
 	res.send("Nothing to see here...")
@@ -40,84 +54,15 @@ app.get('/exchanges/:exchange?', function (req, res) {
 		res.send("Please provide an 'exchange' value.")
 	} else {
 		(async function () {
-			let name = getNameByExchange(exchange)
+			let name = config.getAccountByExchange(exchange)
 			res.send(await eval(name).loadMarkets())
 		}) ();
 	}
 })
 
-function getNameByExchange(exchange) {
-	return config.exchanges.find(e => e.exchange === exchange).name
-}
-
-function getExchangeByName(name) {
-	return config.exchanges.find(e => e.name === name).exchange
-}
-
-function getExchangeParams(name) {
-	let exchange = config.exchanges.find(e => e.name === name)
-	let params = exchange.params || {}
-	return params
-}
-
-async function getCurrentPosition(name, instrument) {
-	let balance = await eval(name).fetchPosition(instrument)
-	console.log("<- getCurrentPosition", [balance.info.direction, balance.info.size])
-	return [balance.info.direction, balance.info.size]
-}
-
-function getClosingOrder(order) {
-	let side = order[0] === "buy" ? "sell" : "buy"
-	console.log("<- getClosingOrder", [side, order[1]])
-	return [side, order[1]]
-}
-
-async function getBalance(exchange) {
-	console.log("-> getBalance", exchange)
-	let e = eval(exchange)
-	let p = getExchangeParams(exchange)
-	let balance = await e.fetchBalance(p)
-	console.log("<- getBalance", balance)
-}
-
-async function processOrder(account, instrument, order) {
-	console.log("-> Processing", order)
-	switch (order.t) {
-	  case 'limit_buy':
-		eval(account).createOrder(instrument, "limit", "buy", order.a, order.p)
-		break;
-	  case 'limit_sell':
-		eval(account).createOrder(instrument, "limit", "sell", order.a, order.p)
-		break;
-	  case 'market_buy':
-		eval(account).createOrder(instrument, "market", "buy", order.a)
-		break;
-	  case 'market_sell':
-		eval(account).createOrder(instrument, "market", "sell", order.a)
-		break;
-	  case 'stop_market_buy':
-		eval(account).createOrder(instrument, "stop_market", "buy", order.a, null, { "trigger_price": order.p, "trigger": "mark_price", "reduce_only": true })
-		break;
-	  case 'stop_market_sell':
-		eval(account).createOrder(instrument, "stop_market", "sell", order.a, null, { "trigger_price": order.p, "trigger": "mark_price", "reduce_only": true })
-		break;
-	  case 'close_position':
-		let position = await getCurrentPosition(account, instrument);
-		let closing_order = getClosingOrder(position)
-		eval(account).createOrder(instrument, "market", closing_order[0], closing_order[1])
-	  	eval(account).cancelAllOrders(instrument)
-		console.log("-> Set closing_order", closing_order, "and canceled pending orders.")
-		break;
-	  default:
-	    console.error("xx Unknown order type, please refer to the documentation.", order.t);
-	}
-	console.log("<- Executed order", order)
-	console.log("--")
-}
-
 app.post('/trade', function (req, res) {
     console.log("<- Received", req.body.orders.length, "order(s) for", req.body.account, ":", req.body.instrument)
-    req.body.orders.forEach(order => processOrder(req.body.account, req.body.instrument, order));
+    req.body.orders.forEach(order => new Order(req.body.account, req.body.instrument, order).process());
     res.end();
 })
 
