@@ -1,0 +1,39 @@
+name: Docker image CI
+
+on:
+  push:
+    branches:
+    - 'main'
+    paths-ignore:
+    - '**.md'
+
+jobs:
+  test:
+
+    runs-on: node:17-alpine
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Use Node.js
+      uses: actions/setup-node@v3
+      with:
+        cache: 'npm'
+    - run: npm ci
+    - run: npm run build --if-present
+    - run: npm test
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Docker Login
+      env:
+        DOCKER_USER: ${{secrets.DOCKER_USER}}
+        DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
+      run: |
+        docker login -u $DOCKER_USER -p $DOCKER_PASSWORD 
+    - name: Docker Build
+      run: docker build -t tvial/docker-tradingview-trader ./
+      
+    - name: Docker Push
+      run: docker push tvial/docker-tradingview-trader
