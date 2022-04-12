@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --coverage --watchAll --forceExit --silent"
   },
   "author": "",
   "license": "ISC",
@@ -12,5 +12,15 @@
     "ccxt": "^1.77.90",
     "console-stamp": "^3.0.4",
     "express": "^4.17.3"
+  },
+  "devDependencies": {
+    "ccxt.mock": "github:dsbaars/ccxt.mock",
+    "jest": "^27.5.1"
+  },
+  "jest": {
+    "setupFilesAfterEnv": [
+      "./jest.setup.js"
+    ],
+    "coverageReporters": ["html", "text"]
   }
 }

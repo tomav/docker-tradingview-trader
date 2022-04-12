@@ -4,3 +4,4 @@ config.json
 tmp/
 package-lock.json
 node_modules/
+coverage/
