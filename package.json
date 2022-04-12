@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest --coverage --watchAll --forceExit --silent"
+    "run": "node index.js",
+    "test": "jest --coverage --forceExit --silent",
+    "test-local": "jest --coverage --watchAll --forceExit"
   },
   "author": "",
   "license": "ISC",
