@@ -6,7 +6,8 @@
   "scripts": {
     "run": "node index.js",
     "test": "jest --coverage --forceExit --silent",
-    "test-local": "jest --coverage --watchAll --forceExit"
+    "test-local": "jest --coverage --watchAll --forceExit",
+    "build-docker": "docker build -t tvial/docker-tradingview-trader ."
   },
   "author": "",
   "license": "ISC",
