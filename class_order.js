@@ -17,6 +17,17 @@ class Order {
 		return [side, current_direction_and_amount[1]]
 	}
 
+	getScaledOrderPrices() {
+		var [f,t] = [Math.min(this.order.from, this.order.to), Math.max(this.order.from, this.order.to)]
+		let step = Math.abs(f-t)/this.order.num
+		let prices = [f.toFixed(2)]
+		while (Math.max(...prices) <= t-step) {
+			let val = Math.max(...prices)+step
+			prices.push(val.toFixed(2))
+		}
+		return prices
+	}
+
 	async process() {
 		console.log("-> Processing", this.order)
 		switch (this.order.t) {
@@ -26,6 +37,16 @@ class Order {
 			case 'limit_sell':
 				eval(this.account).createOrder(this.instrument, "limit", "sell", this.order.a, this.order.p)
 				return "executed limit_sell"
+			case 'scaled_buy':
+				var prices = this.getScaledOrderPrices();
+				var amount = this.order.a/this.order.num
+				prices.forEach(price => eval(this.account).createOrder(this.instrument, "limit", "buy", amount, price));
+				return "executed scaled_buy"
+			case 'scaled_sell':
+				var prices = this.getScaledOrderPrices();
+				var amount = this.order.a/this.order.num
+				prices.forEach(price => eval(this.account).createOrder(this.instrument, "limit", "sell", amount, price));
+				return "executed scaled_sell"
 			case 'market_buy':
 				eval(this.account).createOrder(this.instrument, "market", "buy", this.order.a)
 				return "executed market_buy"
