@@ -18,8 +18,8 @@ class Order {
 	}
 
 	getScaledOrderPrices() {
-		var [f,t] = [Math.min(this.order.from, this.order.to), Math.max(this.order.from, this.order.to)]
-		let step = Math.abs(f-t)/this.order.num
+		var [f,t] = [Math.min(this.order.u, this.order.l), Math.max(this.order.u, this.order.l)]
+		let step = Math.abs(f-t)/this.order.n
 		let prices = [f.toFixed(2)]
 		while (Math.max(...prices) <= t-step) {
 			let val = Math.max(...prices)+step
@@ -39,7 +39,7 @@ class Order {
 				return "executed limit_sell"
 			case 'scaled_buy':
 				var prices = this.getScaledOrderPrices();
-				var amount = this.order.a/this.order.num
+				var amount = this.order.a/this.order.n
 				prices.forEach(price => eval(this.account).createOrder(this.instrument, "limit", "buy", amount, price));
 				return "executed scaled_buy"
 			case 'scaled_sell':

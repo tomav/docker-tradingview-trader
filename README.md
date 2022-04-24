@@ -13,7 +13,13 @@ This nodejs project allows you to execute trades from Tradingview alerts on most
 ### Tradingview alert message
 
 Tradingview `Webhook URL` must be set to `https://{your-hostname.tld}/trade`
-Read the following section to understand to fill the `Message` field.
+Read the following sections to understand how to fill the `Message` field.
+
+<div align="center">
+
+![Tradingview alert panel](images/tradingview-alert-panel.png "Tradingview alert panel")
+
+</div>
 
 #### Real-life example
 
@@ -31,21 +37,32 @@ Read the following section to understand to fill the `Message` field.
 
 This example will open a market position, place a limit buy order, and set a stop order.
 
-#### Params
+**Note: JSON must be valid in order to be executed. You can check format using [JSONLint](https://jsonlint.com/).**
 
-* `t` (type)   => order type must have one of the following value:
-	* `limit_buy` at specified price
-	* `limit_sell` at specified price
-	* `market_buy` at current price
-	* `market_sell` at current price
-	* `stop_market_buy` at specified price
-	* `stop_market_sell` at specified price
-	* `close_position` and cancel other orders on the instrument
-* `a` (amount) => amount to buy or sell
-* `p` (price)  => price to execute the order (only used for limit and stop orders)
+### Params description and requirement for each order type
+
+* `t` order **type**
+* `a` **amount** to buy or sell
+* `p` **price** at which to place order
+* `u` **upper** price for a scaled order
+* `l` **lower** price for a scaled order
+
+|                    t |  a  |  p  |  u  |  l  |  n  |
+|---------------------:|:---:|:---:|:---:|:---:|:---:|
+|        **limit_buy** |  x  |  x  |     |     |     |
+|       **limit_sell** |  x  |  x  |     |     |     |
+|       **scaled_buy** |  x  |     |  x  |  x  |  x  |
+|      **scaled_sell** |  x  |     |  x  |  x  |  x  |
+|       **market_buy** |  x  |     |     |     |     |
+|      **market_sell** |  x  |     |     |     |     |
+|  **stop_market_buy** |  x  |  x  |     |     |     |
+| **stop_market_sell** |  x  |  x  |     |     |     |
+|   **close_position** |  x  |  x  |     |     |     |
+
 
 ### Endpoints
 
 * `POST /trade` to place trades from tradingview
 * `GET /exchanges` to list supported exhanges, useful to find a `ccxt id` 
 * `GET /exchanges/:exchange` to list available instruments (symbols) for a specific exchange
+
