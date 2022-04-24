@@ -46,6 +46,7 @@ This example will open a market position, place a limit buy order, and set a sto
 * `p` **price** at which to place order
 * `u` **upper** price for a scaled order
 * `l` **lower** price for a scaled order
+* `n` **number** of orders for a scaled order
 
 |                    t |  a  |  p  |  u  |  l  |  n  |
 |---------------------:|:---:|:---:|:---:|:---:|:---:|
@@ -57,7 +58,7 @@ This example will open a market position, place a limit buy order, and set a sto
 |      **market_sell** |  x  |     |     |     |     |
 |  **stop_market_buy** |  x  |  x  |     |     |     |
 | **stop_market_sell** |  x  |  x  |     |     |     |
-|   **close_position** |  x  |  x  |     |     |     |
+|   **close_position** |     |     |     |     |     |
 
 
 ### Endpoints
