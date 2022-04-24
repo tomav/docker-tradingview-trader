@@ -3,6 +3,36 @@ class Order {
 		this.account = account;
 		this.instrument = instrument;
 		this.order = order;
+		this.checkRequiredParams()
+	}
+
+	checkRequiredParams() {
+		console.log("-> checkRequiredParams", this.order)
+		const required = (name, val, type) => {
+			if (val === undefined) {
+				throw new Error(`Parameter '${name}' is required for ${type} orders`);
+			}
+		};
+		switch (this.order.t) {
+			case 'market_buy':
+			case 'market_sell':
+				required('a', this.order.a, this.order.t)
+				break;
+			case 'scaled_buy':
+			case 'scaled_sell':
+				required('a', this.order.a, this.order.t)
+				required('u', this.order.u, this.order.t)
+				required('l', this.order.l, this.order.t)
+				required('n', this.order.n, this.order.t)
+				break;
+			case 'limit_buy':
+			case 'limit_sell':
+			case 'stop_market_buy':
+			case 'stop_market_sell':
+				required('a', this.order.a, this.order.t)
+				required('p', this.order.p, this.order.t)
+				break;
+		}
 	}
 
 	async getCurrentPosition() {
