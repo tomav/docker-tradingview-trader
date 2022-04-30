@@ -1,9 +1,9 @@
 beforeAll(async () => {
 
   const ccxt = require ('ccxt');
-  const mockExchange  = require('ccxt.mock');
-  global.testExchange1 = new mockExchange.mock({})
-  global.testExchange2 = new mockExchange.mock({})
+  const mockExchange  = require('../ccxt-faker/index.js');
+  global.testExchange1 = new mockExchange.fake({})
+  global.testExchange2 = new mockExchange.fake({})
 
   let json = {
     "exchanges": [
@@ -11,13 +11,19 @@ beforeAll(async () => {
         "account": "first_account",
         "exchange": "testExchange1",
         "key": "qwerty",
-        "secret": "ytrewq"
+        "secret": "ytrewq",
+        "params": { "currency": "BTC" }
       }, {
         "account": "second_account",
         "exchange": "testExchange2",
         "key": "qwerty",
         "secret": "ytrewq",
         "params": { "currency": "ETH" }
+      }, {
+        "account": "third_account",
+        "exchange": "testExchange3",
+        "key": "qwerty",
+        "secret": "ytrewq"
       }
     ]
   }

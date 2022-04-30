@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "run": "node index.js",
-    "test": "jest --coverage --forceExit --silent",
+    "test": "jest --coverage --silent",
     "test-local": "jest --coverage --watchAll --forceExit",
     "build-docker": "docker build -t tvial/docker-tradingview-trader ."
   },
@@ -17,7 +17,7 @@
     "express": "^4.17.3"
   },
   "devDependencies": {
-    "ccxt.mock": "github:dsbaars/ccxt.mock",
+    "ccxt-faker": "github:tomav/ccxt-faker",
     "jest": "^27.5.1"
   },
   "jest": {

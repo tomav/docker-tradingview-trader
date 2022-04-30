@@ -9,7 +9,8 @@ test('getExchangeByAccount() returns correct data', () => {
 });
 
 test('getAccountParams() returns correct data', () => {
-  expect(global.config.getAccountParams("first_account")).toStrictEqual({});
+  expect(global.config.getAccountParams("first_account")).toStrictEqual({ "currency": "BTC" });
   expect(global.config.getAccountParams("second_account")).toStrictEqual({ "currency": "ETH" });
+  expect(global.config.getAccountParams("third_account")).toStrictEqual({});
 });
 

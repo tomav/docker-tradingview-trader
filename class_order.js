@@ -1,13 +1,14 @@
 class Order {
 	constructor(account, instrument, order) {
-		this.account = account;
-		this.instrument = instrument;
-		this.order = order;
-		this.checkRequiredParams()
+		this.account = account
+		this.instrument = instrument
+		this.order = order
+		this.params = global.config.getAccountParams("first_account")
+		this.checkRequiredOrderParams()
 	}
 
-	checkRequiredParams() {
-		console.log("-> checkRequiredParams", this.order)
+	checkRequiredOrderParams() {
+		console.log("-> checkRequiredOrderParams", this.order)
 		const required = (name, val, type) => {
 			if (val === undefined) {
 				throw new Error(`Parameter '${name}' is required for ${type} orders`);
@@ -37,8 +38,34 @@ class Order {
 
 	async getCurrentPosition() {
 		let position = await eval(this.account).fetchPosition(this.instrument)
-		console.debug("<- getCurrentPosition", [position.info.direction, Math.abs(position.info.size)])
-		return [position.info.direction, Math.abs(position.info.size)]
+		let response
+		if (position.result.length > 0) {
+			console.debug("<- getCurrentPosition", [position.result[0].direction, Math.abs(position.result[0].size)])
+			response = [position.result[0].direction, Math.abs(position.result[0].size)]		
+		} else {
+			response = []
+		}
+		return response
+	}
+
+	async getContractSize() {
+		let markets = await eval(this.account).publicGetGetInstruments(this.params)
+	    let market = markets.result.find(market => market.instrument_name === this.instrument)
+		console.debug("<- getContractSize", market.contract_size)
+		return market.contract_size
+	}
+
+	async getPositionSize(stop_level, risk) {
+		let balance 	    	= await eval(this.account).fetchBalance(this.params)
+		console.log("====> balance " + this.instrument, balance)
+		let currency			= this.params.currency
+		let capital_value     	= balance[currency].free
+		let close 				= await eval(this.account).fetchTicker(this.instrument)
+		let contract_size		= await this.getContractSize()
+		let risk_amount        	= capital_value * risk 
+		let stop_loss_distance 	= Math.abs(close-stop_level)
+		let position_size      	= (risk_amount/(stop_loss_distance/close))/contract_size
+		return position_size
 	}
 
 	getClosingOrder(current_direction_and_amount) {
@@ -59,35 +86,39 @@ class Order {
 	}
 
 	async process() {
+		let amount
+		if (this.order.t !== 'close_position') {
+			amount = this.order.a.toString().includes("%") ? await this.getPositionSize(30, this.order.a) : this.order.a
+		}
 		console.log("-> Processing", this.order)
 		switch (this.order.t) {
 			case 'limit_buy':
-				eval(this.account).createOrder(this.instrument, "limit", "buy", this.order.a, this.order.p)
+				eval(this.account).createOrder(this.instrument, "limit", "buy", amount, this.order.p)
 				return "executed limit_buy"
 			case 'limit_sell':
-				eval(this.account).createOrder(this.instrument, "limit", "sell", this.order.a, this.order.p)
+				eval(this.account).createOrder(this.instrument, "limit", "sell", amount, this.order.p)
 				return "executed limit_sell"
 			case 'scaled_buy':
 				var prices = this.getScaledOrderPrices();
-				var amount = this.order.a/this.order.n
+				amount = amount/this.order.n
 				prices.forEach(price => eval(this.account).createOrder(this.instrument, "limit", "buy", amount, price));
 				return "executed scaled_buy"
 			case 'scaled_sell':
 				var prices = this.getScaledOrderPrices();
-				var amount = this.order.a/this.order.num
+				amount = amount/this.order.num
 				prices.forEach(price => eval(this.account).createOrder(this.instrument, "limit", "sell", amount, price));
 				return "executed scaled_sell"
 			case 'market_buy':
-				eval(this.account).createOrder(this.instrument, "market", "buy", this.order.a)
+				eval(this.account).createOrder(this.instrument, "market", "buy", amount)
 				return "executed market_buy"
 			case 'market_sell':
-				eval(this.account).createOrder(this.instrument, "market", "sell", this.order.a)
+				eval(this.account).createOrder(this.instrument, "market", "sell", amount)
 				return "executed market_sell"
 			case 'stop_market_buy':
-				eval(this.account).createOrder(this.instrument, "stop_market", "buy", this.order.a, null, { "trigger_price": this.order.p, "trigger": "mark_price", "reduce_only": true })
+				eval(this.account).createOrder(this.instrument, "stop_market", "buy", amount, null, { "trigger_price": this.order.p, "trigger": "mark_price", "reduce_only": true })
 				return "executed stop_market_buy"
 			case 'stop_market_sell':
-				eval(this.account).createOrder(this.instrument, "stop_market", "sell", this.order.a, null, { "trigger_price": this.order.p, "trigger": "mark_price", "reduce_only": true })
+				eval(this.account).createOrder(this.instrument, "stop_market", "sell", amount, null, { "trigger_price": this.order.p, "trigger": "mark_price", "reduce_only": true })
 				return "executed stop_market_sell"
 			case 'close_position':
 				let position = await this.getCurrentPosition(this.account, this.instrument);

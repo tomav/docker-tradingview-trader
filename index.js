@@ -7,7 +7,7 @@ console.log("-- Starting server...");
 const Order 	= require('./class_order.js')
 const Config 	= require('./class_config.js')
 const json 		= require('./config.json');
-const config	= new Config(json)
+global.config	= new Config(json)
 
 const ccxt = require ('ccxt');
 const express = require('express')
@@ -56,6 +56,25 @@ app.get('/exchanges/:exchange?', function (req, res) {
 		(async function () {
 			let name = config.getAccountByExchange(exchange)
 			res.send(await eval(name).loadMarkets())
+		}) ();
+	}
+})
+
+app.get('/exchanges/:exchange?/:currency?', function (req, res) {
+	let exchange = req.params.exchange
+	let currency = req.params.currency
+	if (!exchange || !currency) {
+		res.send("Please provide an 'exchange' and 'currency' value.")
+	} else {
+		(async function () {
+			let name = config.getAccountByExchange(exchange)
+			try {
+				res.send(await eval(name).publicGetGetInstruments({currency: currency}))
+			} catch (e) {
+				res.send(e)
+				console.error(e)
+			}
+
 		}) ();
 	}
 })
