@@ -1,7 +1,7 @@
 beforeAll(async () => {
 
   const ccxt = require ('ccxt');
-  const mockExchange  = require('../ccxt-faker/index.js');
+  const mockExchange  = require('ccxt-faker');
   global.testExchange1 = new mockExchange.fake({})
   global.testExchange2 = new mockExchange.fake({})
 
