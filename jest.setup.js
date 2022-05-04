@@ -2,8 +2,8 @@ beforeAll(async () => {
 
   const ccxt = require ('ccxt');
   const mockExchange  = require('ccxt-faker');
-  global.testExchange1 = new mockExchange.fake({})
-  global.testExchange2 = new mockExchange.fake({})
+  global.first_account = new mockExchange.fake({})
+  global.second_account = new mockExchange.fake({})
 
   let json = {
     "exchanges": [

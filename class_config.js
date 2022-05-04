@@ -13,7 +13,7 @@ class Config {
 
 	getAccountParams(account) {
 		let exchange = this.exchanges.find(e => e.account === account)
-		let params = exchange.params || {}
+		let params = exchange.hasOwnProperty('params') ? exchange.params : {}
 		return params
 	}
 }

@@ -3,7 +3,7 @@ class Order {
 		this.account = account
 		this.instrument = instrument
 		this.order = order
-		this.params = global.config.getAccountParams("first_account")
+		this.params = global.config.getAccountParams(this.account)
 		this.checkRequiredOrderParams()
 	}
 
@@ -57,7 +57,6 @@ class Order {
 
 	async getPositionSize(stop_level, risk) {
 		let balance 	    	= await eval(this.account).fetchBalance(this.params)
-		console.log("====> balance " + this.instrument, balance)
 		let currency			= this.params.currency
 		let capital_value     	= balance[currency].free
 		let close 				= await eval(this.account).fetchTicker(this.instrument)
