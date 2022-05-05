@@ -8,7 +8,7 @@ class Order {
 	}
 
 	checkRequiredOrderParams() {
-		console.log("-> checkRequiredOrderParams", this.order)
+		console.debug("-> checkRequiredOrderParams", this.order)
 		const required = (name, val, type) => {
 			if (val === undefined) {
 				throw new Error(`Parameter '${name}' is required for ${type} orders`);
@@ -75,7 +75,7 @@ class Order {
 
 	getScaledOrderPrices() {
 		var [f,t] = [Math.min(this.order.u, this.order.l), Math.max(this.order.u, this.order.l)]
-		let step = Math.abs(f-t)/this.order.n
+		let step = Math.abs(f-t)/(this.order.n-1)
 		let prices = [f.toFixed(2)]
 		while (Math.max(...prices) <= t-step) {
 			let val = Math.max(...prices)+step
