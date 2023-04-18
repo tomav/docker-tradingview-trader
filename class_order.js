@@ -10,8 +10,8 @@ class Order {
 	checkRequiredOrderParams() {
 		console.debug("-> checkRequiredOrderParams", this.order)
 		const required = (name, val, type) => {
-			if (val === undefined) {
-				throw new Error(`Parameter '${name}' is required for ${type} orders`);
+			if (val === undefined || val === null) {
+				throw new Error(`Parameter '${name}' is required for ${type} orders, received ${val}`);
 			}
 		};
 		switch (this.order.t) {

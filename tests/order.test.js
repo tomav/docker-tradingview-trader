@@ -7,6 +7,10 @@ describe('required params', () => {
       let order_json = { "t": type, "p": 10 }
       expect(() => new Order("first_account", "BTC/USDC", order_json)).toThrow("Parameter 'a'");
     });
+    test(type + ' returns error if "amount" is null', () => {
+      let order_json = { "t": type, "p": 10, a: null }
+      expect(() => new Order("first_account", "BTC/USDC", order_json)).toThrow("Parameter 'a'");
+    });
     test(type + ' returns error if "price" is missing', () => {
       let order_json = { "t": type, "a": 10 }
       expect(() => new Order("first_account", "BTC/USDC", order_json)).toThrow("Parameter 'p'");
