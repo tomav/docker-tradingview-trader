@@ -3,12 +3,20 @@ class Config {
 		this.exchanges = json.exchanges;
 	}
 
-	getAccountByExchange(exchange) {
-		return this.exchanges.find(e => e.exchange === exchange).account
+	getAccountByExchange(exchange_name) {
+		let exchange =  this.exchanges.find(e => e.exchange === exchange_name)
+		if (!exchange) {
+			throw new Error(`No exchange named '${exchange}'`);
+		}
+		return exchange.account
 	}
 
-	getExchangeByAccount(account) {
-		return this.exchanges.find(e => e.account === account).exchange
+	getExchangeByAccount(account_name) {
+		let account = this.exchanges.find(e => e.account === account_name)
+		if (!account) {
+			throw new Error(`No account named '${account}'`);
+		}
+		return account.exchange
 	}
 
 	getAccountParams(account) {
