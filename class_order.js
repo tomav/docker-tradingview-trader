@@ -92,7 +92,7 @@ class Order {
 		}
 		console.log("-> Processing", this.order)
 		if (this.order.t == 'debug') {
-			console.log("<- Debug mode, no order placed.")
+			console.log("-x Debug mode, no order placed.")
 			return "executed debug order"
 		} else {
 			switch (this.order.t) {

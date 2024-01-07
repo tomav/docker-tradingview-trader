@@ -21,6 +21,9 @@ class Config {
 
 	getAccountParams(account) {
 		let exchange = this.exchanges.find(e => e.account === account)
+		if (!exchange) {
+			throw new Error(`No account named '${account}'`);
+		}
 		let params = exchange.hasOwnProperty('params') ? exchange.params : {}
 		return params
 	}

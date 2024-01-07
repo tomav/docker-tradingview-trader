@@ -60,6 +60,11 @@ This example will open a market position, place a limit buy order, and set a sto
 | **stop_market_sell** |  x  |  x  |     |     |     |
 |   **close_position** |     |     |     |     |     |
 
+### Debug
+
+```
+curl -X POST -H "Content-Type: application/json" -d '{ "account": "first_account", "instrument": "BTC-PERPETUAL", "orders": [{ "t": "debug", "a": 10, "p": 10 }] }' http://localhost:3000/trade
+```
 
 ### Endpoints
 
@@ -67,3 +72,11 @@ This example will open a market position, place a limit buy order, and set a sto
 * `GET /exchanges` to list supported exhanges, useful to find a `ccxt id` 
 * `GET /exchanges/:exchange` to list available instruments (symbols) for a specific exchange
 
+### FAQ
+
+#### Amount unit is in Fiat or Asset?
+It depends on the exchange. Example:
+* deribit: it's fiat on `BTC-PERPETUAL`
+* bitfinex: it's asset on `BTC/USD`
+
+Refere to exchange or ccxt documentation.
