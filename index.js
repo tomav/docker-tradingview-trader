@@ -39,11 +39,13 @@ config.exchanges.forEach(function(e){
  ***************************************************/
 
 app.get('/', function (req, res) {
+	console.debug("-> GET /")
 	res.send("Nothing to see here...")
 })
 
 app.get('/exchanges', function (req, res) {
 	(async function () {
+		console.debug("-> GET /exchanges")
 		res.send(ccxt.exchanges)
 	}) ();
 })
@@ -54,6 +56,7 @@ app.get('/exchanges/:exchange?', function (req, res) {
 		res.send("Please provide an 'exchange' value.")
 	} else {
 		(async function () {
+			console.debug("-> GET /exchanges/"+exchange)
 			let name = config.getAccountByExchange(exchange)
 			res.send(await eval(name).loadMarkets())
 		}) ();
@@ -67,6 +70,7 @@ app.get('/exchanges/:exchange?/:currency?', function (req, res) {
 		res.send("Please provide an 'exchange' and 'currency' value.")
 	} else {
 		(async function () {
+			console.debug("-> GET /exchanges/"+exchange+"/"+currency)
 			let name = config.getAccountByExchange(exchange)
 			try {
 				res.send(await eval(name).publicGetGetInstruments({currency: currency}))
