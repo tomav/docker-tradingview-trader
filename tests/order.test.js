@@ -17,7 +17,6 @@ describe('required params', () => {
     });
   });
 
-
   ["market_buy", "market_sell"].forEach(function(type){
     test(type + ' returns error if "amount" is missing', () => {
       let order_json = { "t": type, "p": 10 }
@@ -43,7 +42,6 @@ describe('required params', () => {
       expect(() => new Order("first_account", "BTC/USDC", order_json)).toThrow("Parameter 'n'");
     });
   });
-
 
 });
 
@@ -92,7 +90,6 @@ describe('test orders', () => {
     });
   });
 
-
   test('"scaled_buy" type is handled properly', async () => {
     let order_json = { "t": "scaled_buy", "a": 12, "u": 100, "l": 90, "n": 10 }
     let order = new Order("first_account", "BTC/USDC", order_json)
@@ -133,5 +130,14 @@ describe('test orders', () => {
     });
   });
 
+  test('"debug" type is handled properly', async () => {
+    let order_json = { "t": "debug", "a": 10, "p": 10, "u": 100, "l": 90, "n": 10 }
+    let order = new Order("first_account", "ETH/USDC", order_json)
+    let markets = await eval(first_account).loadMarkets();
+
+    return order.process().then(data => {
+      expect(data).toBe("executed debug order");
+    });
+  });
 
 });

@@ -28,6 +28,7 @@ class Order {
 				break;
 			case 'limit_buy':
 			case 'limit_sell':
+			case 'debug':
 			case 'stop_market_buy':
 			case 'stop_market_sell':
 				required('a', this.order.a, this.order.t)
@@ -90,49 +91,54 @@ class Order {
 			amount = this.order.a.toString().includes("%") ? await this.getPositionSize(30, this.order.a) : this.order.a
 		}
 		console.log("-> Processing", this.order)
-		switch (this.order.t) {
-			case 'limit_buy':
-				eval(this.account).createOrder(this.instrument, "limit", "buy", amount, this.order.p)
-				return "executed limit_buy"
-			case 'limit_sell':
-				eval(this.account).createOrder(this.instrument, "limit", "sell", amount, this.order.p)
-				return "executed limit_sell"
-			case 'scaled_buy':
-				var prices = this.getScaledOrderPrices();
-				amount = amount/this.order.n
-				prices.forEach(price => eval(this.account).createOrder(this.instrument, "limit", "buy", amount, price));
-				return "executed scaled_buy"
-			case 'scaled_sell':
-				var prices = this.getScaledOrderPrices();
-				amount = amount/this.order.num
-				prices.forEach(price => eval(this.account).createOrder(this.instrument, "limit", "sell", amount, price));
-				return "executed scaled_sell"
-			case 'market_buy':
-				eval(this.account).createOrder(this.instrument, "market", "buy", amount)
-				return "executed market_buy"
-			case 'market_sell':
-				eval(this.account).createOrder(this.instrument, "market", "sell", amount)
-				return "executed market_sell"
-			case 'stop_market_buy':
-				eval(this.account).createOrder(this.instrument, "stop_market", "buy", amount, null, { "trigger_price": this.order.p, "trigger": "mark_price", "reduce_only": true })
-				return "executed stop_market_buy"
-			case 'stop_market_sell':
-				eval(this.account).createOrder(this.instrument, "stop_market", "sell", amount, null, { "trigger_price": this.order.p, "trigger": "mark_price", "reduce_only": true })
-				return "executed stop_market_sell"
-			case 'close_position':
-				let position = await this.getCurrentPosition(this.account, this.instrument);
-				if ( ["buy", "sell"].includes(position[0]) ) {
-					let closing_order = this.getClosingOrder(position)
-					eval(this.account).createOrder(this.instrument, "market", closing_order[0], closing_order[1])
-				  	eval(this.account).cancelAllOrders(this.instrument)
-					console.debug("-> Set closing_order", closing_order, "and canceled pending orders.")
-					return "executed close_position"
-				} else {
-					return "No position, nothing to close."
-				}
-			default:
-				console.error("xx Unknown order type, please refer to the documentation.", this.order.t);
-				return "Error: Unknown type " + this.order.t
+		if (this.order.t == 'debug') {
+			console.log("<- Debug mode, no order placed.")
+			return "executed debug order"
+		} else {
+			switch (this.order.t) {
+				case 'limit_buy':
+					eval(this.account).createOrder(this.instrument, "limit", "buy", amount, this.order.p)
+					return "executed limit_buy"
+				case 'limit_sell':
+					eval(this.account).createOrder(this.instrument, "limit", "sell", amount, this.order.p)
+					return "executed limit_sell"
+				case 'scaled_buy':
+					var prices = this.getScaledOrderPrices();
+					amount = amount/this.order.n
+					prices.forEach(price => eval(this.account).createOrder(this.instrument, "limit", "buy", amount, price));
+					return "executed scaled_buy"
+				case 'scaled_sell':
+					var prices = this.getScaledOrderPrices();
+					amount = amount/this.order.num
+					prices.forEach(price => eval(this.account).createOrder(this.instrument, "limit", "sell", amount, price));
+					return "executed scaled_sell"
+				case 'market_buy':
+					eval(this.account).createOrder(this.instrument, "market", "buy", amount)
+					return "executed market_buy"
+				case 'market_sell':
+					eval(this.account).createOrder(this.instrument, "market", "sell", amount)
+					return "executed market_sell"
+				case 'stop_market_buy':
+					eval(this.account).createOrder(this.instrument, "stop_market", "buy", amount, null, { "trigger_price": this.order.p, "trigger": "mark_price", "reduce_only": true })
+					return "executed stop_market_buy"
+				case 'stop_market_sell':
+					eval(this.account).createOrder(this.instrument, "stop_market", "sell", amount, null, { "trigger_price": this.order.p, "trigger": "mark_price", "reduce_only": true })
+					return "executed stop_market_sell"
+				case 'close_position':
+					let position = await this.getCurrentPosition(this.account, this.instrument);
+					if ( ["buy", "sell"].includes(position[0]) ) {
+						let closing_order = this.getClosingOrder(position)
+						eval(this.account).createOrder(this.instrument, "market", closing_order[0], closing_order[1])
+						  eval(this.account).cancelAllOrders(this.instrument)
+						console.debug("-> Set closing_order", closing_order, "and canceled pending orders.")
+						return "executed close_position"
+					} else {
+						return "No position, nothing to close."
+					}
+				default:
+					console.error("xx Unknown order type, please refer to the documentation.", this.order.t);
+					return "Error: Unknown type " + this.order.t
+			}
 		}
 	}
 }
